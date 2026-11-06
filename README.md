@@ -1,10 +1,10 @@
-# 실습 02 
+## 실습 02 
 
 ### 검색·정렬·페이지네이션 게시판 개선
 
 #### 제출 보고서
 
-[실습 보고서 PDF](docs/Report/202413123_조이진.pdf)
+[실습 보고서 PDF](docs/Report/202413123_report.pdf)
 
 ### 1. 프로젝트와 실행 방법
 
@@ -19,7 +19,7 @@ node server.js
 
 GitHub에는 `package.json`과 `package-lock.json`을 포함하고 `node_modules`는 포함하지 않습니다. 루트의 `.gitignore`에서 `node_modules/`를 제외하므로 저장소를 받은 뒤 `npm install`로 의존성을 설치할 수 있습니다.
 
-#### 과제 요구사항별 구현 내용
+#### 1-1. 과제 요구사항별 구현 내용
 
 | 평가 요구사항 | 코드에 반영한 내용 | 검증 결과 |
 | :--- | :--- | :--- |
