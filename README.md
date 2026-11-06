@@ -1,4 +1,4 @@
-# WEEK 09 · 실습 2 보고서
+# 실습 02 
 
 ## 검색·정렬·페이지네이션 게시판 개선
 
@@ -30,7 +30,7 @@ GitHub에는 `package.json`과 `package-lock.json`을 포함하고 `node_modules
 | URL 상태 복원 (`index.html`) | 검색어·정렬·페이지 URL 동기화, 새로고침·뒤로 가기 복원 | `URLSearchParams`, `pushState`, `popstate`로 URL·입력값·결과를 동기화합니다. §6에서 새로고침과 뒤로 가기를 확인했습니다. |
 | 보안 처리 (`server.js`, `index.html`) | 정렬 키·페이지 입력 검증 및 화면 출력 경계 | 정렬 화이트리스트와 정수 상한을 적용했습니다. 화면에 표시하는 게시글 값은 HTML 이스케이프 처리하고, 서버는 loopback 주소(`127.0.0.1`)에서만 수신하며 프로젝트 폴더 전체 대신 `/`의 게시판 화면만 제공합니다. |
 
-## 2. 실습 요구사항 총 100점
+## 2. 실습 요구사항 
 
 아래 표는 과제 평가 기준, 구현 내용, 검증 증거를 요약합니다. 세부 시험 조건과 결과는 각 항목의 검증 표에 기록했습니다.
 
@@ -41,7 +41,7 @@ GitHub에는 `package.json`과 `package-lock.json`을 포함하고 `node_modules
 | **비동기 처리<br>30점** | 300ms 디바운스 후 요청 1회<br>`AbortController` 취소와 오래된 응답 방지<br>`AbortError` 안전 처리<br>느린 네트워크에서 검색 변경 후 취소·최종 결과 | 디바운스, 중단 신호, 오래된 응답 방지, `AbortError`, Slow 4G에서의 요청 취소를 시험했습니다. §5에 네트워크 요청 상태와 화면 결과를 기록했습니다. |
 | **URL 상태 복원<br>10점** | 오프셋 모드에서 검색어·정렬·페이지를 `URLSearchParams`로 동기화<br>새로고침·뒤로 가기(`popstate`) 후 URL·입력창·정렬·결과 일치 | URL 동기화, 새로고침, 뒤로 가기를 시험했습니다. §6의 캡처에 URL·입력 상태·결과가 기록되어 있습니다. |
 
-## 3. 검색·정렬 · 25점
+# 2-1. 검색·정렬
 
 ### 구현 설명
 
@@ -64,7 +64,7 @@ GitHub에는 `package.json`과 `package-lock.json`을 포함하고 `node_modules
 | 허용되지 않은 값의 기본 처리 | `sort=banana`와 `latest` 결과 ID 비교 | 두 요청의 ID 순서가 같고 Console에 잘못된 정렬 키가 `latest`로 처리됐다는 `PASS`가 출력됩니다. | ![잘못된 정렬 키 fallback](docs/Screenshots/search_sort/03_sort_invalid_fallback.png) |
 | 상속 속성 차단 | `sort=__proto__`, `sort=constructor` 비교 | 두 값 모두 허용된 정렬 키로 동작하지 않으며 최신순 결과와 ID가 같습니다. Console에 `PASS`가 표시됩니다. | ![상속 속성 정렬 키 차단](docs/Screenshots/search_sort/04_sort_blocked.png) |
 
-## 4. 페이지네이션 · 35점
+# 2-2. 페이지네이션 
 
 ### 구현 설명
 
@@ -97,7 +97,7 @@ totalPages = max(1, ceil(totalCount / limit))
 | 마지막 페이지 버튼 상태 | `게시글 1000번` 검색 | 결과 1건, `hasNext=false`, 더 보기 버튼 disabled, Console `PASS`입니다. | ![마지막 페이지 더 보기 비활성화](docs/Screenshots/Pagination/07_cursor_end_disabled.png) |
 | 누락·추가·중복 대조 | 오프셋 검색 결과와 전체 커서 결과의 ID 집합 비교 | 양쪽 모두 167건이며 누락 0, 추가 0, 중복 0, Console `PASS`입니다. 표시 정렬 순서가 다를 수 있으므로 ID 집합으로 비교했습니다. | ![누락·중복 ID 대조](docs/Screenshots/Pagination/06c_cursor_no_omissions.png) |
 
-## 5. 비동기 처리 · 30점
+# 2-3. 비동기 처리 
 
 ### 구현 설명
 
@@ -116,7 +116,7 @@ totalPages = max(1, ceil(totalCount / limit))
 | `AbortError` 안전 처리 | 특정 요청에서 테스트용 `AbortError`를 발생시킴 | 취소 로그가 감지되고 처리되지 않은 Promise 오류가 없어 `PASS`입니다. | ![AbortError 처리](docs/Screenshots/async/03_abort_error_handled.png) |
 | 느린 네트워크 검색 변경·요청 취소 | Network 탭을 `Slow 4G`로 설정하고, 검색 요청이 진행되는 동안 검색어를 변경 | Network 목록에 취소된 이전 `fetch`와 완료된 최종 `200` 요청이 표시됩니다. 검색창과 결과는 최종 검색어 `InnoDB`에 일치합니다. 응답 시간은 화면 관찰값이며 고정 성능 지표가 아닙니다. | ![Slow 4G에서 검색 변경 및 요청 취소](docs/Screenshots/async/04_slow_network_search.png) |
 
-## 6. URL 상태 복원 · 10점
+# 2-4. URL 상태 복원 
 
 ### 구현 설명
 
@@ -132,25 +132,25 @@ totalPages = max(1, ceil(totalCount / limit))
 | `URLSearchParams` 동기화 | `B-Tree` 검색, `oldest` 선택, 2페이지 이동 | URL의 `search=B-Tree`, `sort=oldest`, `page=2`가 입력창·정렬 선택·활성 페이지와 일치하고 `PASS`입니다. | ![URL 파라미터와 화면 동기화](docs/Screenshots/url_state/01_url_params_sync.png) |
 | 새로고침·뒤로 가기 복원 | 저장된 2페이지 상태에서 새로고침 후 뒤로 가기 | 새로고침 후 2페이지 상태, 뒤로 가기 후 1페이지 상태로 복원됩니다. 두 상태의 URL·검색창·정렬·응답 결과가 일치하고 전체 `PASS`입니다. | ![새로고침과 popstate 복원](docs/Screenshots/url_state/02_reload_back_restore.png) |
 
-## 7. 페이지네이션 개념 정리
+## 3. 페이지네이션 개념 정리
 
-### 오프셋과 커서는 어떤 화면에 적합한가
+### 3-1. 오프셋과 커서는 어떤 화면에 적합한가
 
 - **오프셋 방식**은 페이지 번호를 직접 선택하거나 전체 페이지 수를 보여주는 게시판·관리 화면에 적합합니다. 원하는 페이지로 바로 이동하기 쉽습니다. 대신 뒤쪽 페이지로 갈수록 앞의 많은 행을 건너뛰어야 할 수 있고, 조회 도중 데이터가 추가·삭제되면 페이지 경계에서 항목이 밀리거나 반복될 수 있습니다.
 - **커서 방식**은 피드나 무한 스크롤처럼 다음 항목을 이어서 보여주는 화면에 적합합니다. 직전 결과의 마지막 ID를 다음 기준으로 사용하므로 큰 페이지 번호를 계산하지 않아도 됩니다. 임의 페이지로 바로 이동하거나 전체 페이지 수를 표시하는 사용 사례에는 덜 적합합니다.
 - 이 예제의 커서 정렬 키는 ID 내림차순으로 고정합니다. 다음 요청은 `id < nextCursor` 조건을 사용해 직전 페이지보다 오래된 ID를 가져옵니다.
 
-### 디바운스와 요청 취소의 역할
+### 3-2. 디바운스와 요청 취소의 역할
 
 - **디바운스**는 입력이 잠시 멈출 때까지 기다려 연속 타이핑 중 발생하는 요청 횟수를 줄입니다. 300ms 디바운스는 마지막 입력 후 300ms 동안 추가 입력이 없을 때 검색을 요청합니다.
 - **요청 취소**는 이미 보낸 요청이 진행 중인 상태에서 검색어가 바뀌었을 때 이전 요청의 작업을 중단하도록 합니다.
 - 두 기능은 목적이 다릅니다. 디바운스는 요청을 보내기 전 호출 빈도를 줄이고, AbortController는 이미 진행 중인 요청을 취소합니다. 요청 sequence 검사는 취소가 늦거나 응답이 경합하는 상황에서 오래된 결과가 화면을 덮는 것을 막습니다.
 
-### `limit + 1` 원리
+### 3-3. `limit + 1` 원리
 
 화면에 `limit`개만 보여주더라도 서버가 후보 결과에서 한 건을 추가로 확인하면 다음 항목이 있는지 알 수 있습니다. 후보가 `limit + 1`개 이상이면 `hasNext=true`로 설정하고, 실제 응답에서는 여분 1개를 제외합니다. 후보가 `limit`개 이하라면 `hasNext=false`입니다. 커서 방식은 이 방법으로 다음 페이지 존재 여부를 판단하며 전체 건수 조회를 하지 않습니다.
 
-### `offset`과 `totalPages` 계산식
+### 3-4. `offset`과 `totalPages` 계산식
 
 ```text
 offset = (page - 1) × limit
@@ -159,8 +159,8 @@ totalPages = max(1, ceil(totalCount ÷ limit))
 
 예를 들어 `page=2`, `limit=10`이면 `offset=10`입니다. `totalCount=1000`, `limit=10`이면 `totalPages=100`입니다. `totalCount=0`일 때는 화면에서 페이지 1을 유지할 수 있도록 `totalPages`의 최소값을 1로 둡니다.
 
-## 8. 검증 범위와 AI 활용
+## 4. 검증 범위와 AI 활용
 
 - 응답 시간은 캡처 당시의 관찰값이며 하드웨어·브라우저·네트워크 상태에 따라 달라집니다. 1,000건 인메모리 예제이므로 실제 DB 인덱스의 시간 복잡도를 증명하는 자료로 해석하지 않습니다.
 - 검색·정렬, 페이지네이션, 비동기 처리, URL 상태 복원은 표에 제시한 입력 조건으로 확인했습니다. 비동기 검증은 300ms 입력 간격 시험, 제어된 응답 지연 시험, `AbortError` 처리 시험, Slow 4G 네트워크 요청 상태 확인으로 구성했습니다.
-- **AI 활용:** AI의 도움을 받아 서버·클라이언트 코드의 요구사항 반영과 보안 보강, README 초안 및 설명을 작성했습니다. 과제 항목별 브라우저 동작은 직접 실행해 캡처했으며, 추가 API 검사·구문 검사·의존성 취약점 검사도 수행해 결과를 반영했습니다.
+- **AI 활용:** AI를 사용해 서비스 구현을 완료하고, 검증 가이드 및 README 초안 작성을 요청했습니다.
