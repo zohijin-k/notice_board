@@ -1,0 +1,13 @@
+{
+  "name": "week09-board-practice",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Week 09 search, sorting, and pagination exercise",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
