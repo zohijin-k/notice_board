@@ -16,9 +16,12 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
+app.disable('x-powered-by');
 
-app.use(express.static(__dirname)); // 현재 폴더의 index.html 정적 서빙
-app.use(express.json());
+// 프로젝트 소스와 의존성 폴더는 공개하지 않고 게시판 화면만 제공한다.
+app.get('/', (_req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
 
 // 1,000건의 대용량 더미 게시글 데이터 생성 (1~1000)
 const TOPICS = [
@@ -162,7 +165,7 @@ app.get('/api/posts/cursor', (req, res) => {
   });
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, '127.0.0.1', () => {
   console.log(`====================================================`);
   console.log(`🚀 웹서비스설계 9주차 3학년 전공 실습 서버 구동 완료`);
   console.log(`📡 URL: http://localhost:${PORT}`);

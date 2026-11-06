@@ -13,15 +13,18 @@ node server.js
 
 브라우저에서 <http://localhost:3000>을 엽니다. 실행 환경은 Node.js와 Express이며 별도 데이터베이스는 사용하지 않습니다. 조회수는 임의 생성 값이므로 서버를 다시 시작하면 조회수순 결과가 달라질 수 있습니다.
 
-### 주요 수정 사항
+GitHub에는 `package.json`과 `package-lock.json`을 포함하고 `node_modules`는 포함하지 않습니다. 루트의 `.gitignore`에서 `node_modules/`를 제외하므로 저장소를 받은 뒤 `npm install`로 의존성을 설치할 수 있습니다.
 
-| 파일·영역 | 반영한 개선 |
-| :--- | :--- |
-| `server.js` 검색·정렬 | 제목과 본문을 모두 검색하고, 정렬 키를 `latest`, `oldest`, `views`로 제한했습니다. 허용되지 않은 값과 `__proto__`, `constructor` 같은 상속 속성은 `latest`로 처리하며, 조회수 동점은 ID 내림차순으로 정렬합니다. |
-| `server.js` 오프셋 API | 페이지·페이지 크기를 양의 정수 및 상한 범위로 보정하고, 검색 결과를 기준으로 `items`와 `meta`를 구성합니다. |
-| `server.js` 커서 API | 제목·본문 검색과 `id < cursor` 조건을 적용한 뒤 `limit + 1`개를 조회해 `hasNext`와 `nextCursor`를 계산합니다. |
-| `index.html` 비동기 검색 | 300ms 디바운스, `AbortController`, 요청 순번 검사를 적용해 불필요한 요청과 오래된 응답의 화면 반영을 막습니다. `AbortError`는 정상 취소로 구분 처리합니다. |
-| `index.html` 페이지 상태 | 검색·정렬 변경 시 오프셋 페이지를 1로 초기화합니다. URL 파라미터를 입력 상태와 동기화하고 `popstate`에서 상태를 복원합니다. 커서 모드에서는 ID 내림차순으로 고정하고 검색어 변경 시 누적 목록과 커서를 초기화합니다. |
+### 과제 요구사항별 구현 내용
+
+| 평가 요구사항 | 코드에 반영한 내용 | 검증 결과 |
+| :--- | :--- | :--- |
+| 검색·정렬 (`server.js`) | 제목·본문 검색, 결과 없음 처리, 세 정렬 기준, 안전한 정렬 키 처리 | `latest`, `oldest`, `views` 정렬과 조회수 동점의 `id DESC` 기준을 적용했습니다. 잘못된 키와 상속 속성은 `latest`로 처리합니다. §3의 캡처로 확인했습니다. |
+| 오프셋 페이지네이션 (`server.js`) | 페이지 이동, 응답 meta, 잘못된 `page`·`limit` 처리 | 페이지와 페이지 크기를 검증하고 상한을 적용합니다. 응답 meta와 `page=0`, `-1`, `abc`, `limit=1000` 처리 결과를 §4에서 확인했습니다. |
+| 커서 페이지네이션 (`server.js`, `index.html`) | 검색, `limit + 1`, ID 내림차순, 검색 초기화, 마지막 상태 | 검색·커서 조건을 적용한 뒤 `limit + 1`개로 `hasNext`를 계산합니다. ID 내림차순을 고정하고, 검색어 변경 때 누적 목록·커서를 초기화하며, 마지막에는 더 보기 버튼을 비활성화합니다. §4에서 확인했습니다. |
+| 비동기 처리 (`index.html`) | 300ms 디바운스, 이전 요청 취소, 오래된 응답 방지, `AbortError` 처리 | `AbortController`와 요청 순번 검사를 적용했습니다. 디바운스, 지연 응답, 취소 오류, Slow 4G에서의 요청 상태를 §5 캡처로 확인했습니다. |
+| URL 상태 복원 (`index.html`) | 검색어·정렬·페이지 URL 동기화, 새로고침·뒤로 가기 복원 | `URLSearchParams`, `pushState`, `popstate`로 URL·입력값·결과를 동기화합니다. §6에서 새로고침과 뒤로 가기를 확인했습니다. |
+| 보안 처리 (`server.js`, `index.html`) | 정렬 키·페이지 입력 검증 및 화면 출력 경계 | 정렬 화이트리스트와 정수 상한을 적용했습니다. 화면에 표시하는 게시글 값은 HTML 이스케이프 처리하고, 서버는 loopback 주소(`127.0.0.1`)에서만 수신하며 프로젝트 폴더 전체 대신 `/`의 게시판 화면만 제공합니다. |
 
 ## 2. 실습 요구사항 총 100점
 
@@ -80,7 +83,7 @@ totalPages = max(1, ceil(totalCount / limit))
 
 | 세부 검증 | 입력·방법 | 기대 및 캡처에서 확인한 실제 결과 | 증거 |
 | :--- | :--- | :--- | :--- |
-| 오프셋 페이지 이동·meta | `page=2&limit=10&sort=oldest` 요청 | `page=2`, `limit=10`, `totalCount=1000`, `totalPages=100`, `hasPrev=true`, `hasNext=true`, `offset=10`을 확인했습니다. | ![오프셋 meta](docs/Screenshots/Pagination/01_offset_meta.png) |
+| 오프셋 페이지 이동·meta | `page=2&limit=10&sort=oldest` 요청 | 응답 meta에서 `page=2`, `limit=10`, `totalCount=1000`, `totalPages=100`, `hasPrev=true`, `hasNext=true`를 확인했습니다. `offset=10`은 SQL 형태 미리보기에서 확인했습니다. | ![오프셋 meta](docs/Screenshots/Pagination/01_offset_meta.png) |
 | 잘못된 page·limit | `page=0`, `-1`, `abc`, `limit=1000` 요청 | 세 잘못된 page 값은 `page=1`로, `limit=1000`은 상한 `100`으로 보정됩니다. 데이터 1,000건 기준 `totalPages=10`입니다. | ![잘못된 page와 limit](docs/Screenshots/Pagination/02_invalid_page_limit.png) |
 | 검색·정렬 변경 후 초기화 | 2페이지에서 검색어를 변경하고, 다시 2페이지에서 정렬을 변경 | 두 경우 모두 URL의 page가 1로 바뀌고 Console 검사가 각각 `PASS`입니다. | ![검색·정렬 변경 시 페이지 초기화](docs/Screenshots/Pagination/03_search_sort_reset.png) |
 | 커서 제목·본문 검색 및 검색 이후 `limit + 1` | 제목 `B-Tree`, 본문 `게시글 1000번` 검색 후 다음 커서 요청 | 두 검색 모두 일치 결과를 반환하고 다음 커서 요청에도 검색어 조건이 이어집니다. limit 3 검사에서 다음 데이터가 있어 `hasNext=true`와 `nextCursor`를 확인했습니다. 화면 미리보기의 기본 limit 10은 `TAKE 11`입니다. | ![커서 검색과 limit plus one](docs/Screenshots/Pagination/04_cursor_search_limit_plus_one.png) |

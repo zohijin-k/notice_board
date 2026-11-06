@@ -403,6 +403,16 @@
     }
   }
 
+  function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, (character) => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    })[character]);
+  }
+
   function renderTable(items) {
     const tb = document.getElementById('tableBody');
     if (!items || items.length === 0) {
@@ -411,11 +421,11 @@
     }
     tb.innerHTML = items.map(p => `
       <tr>
-        <td style="color:#0066cc; font-weight:700;">${p.id}</td>
-        <td style="font-weight:600;">${p.title}</td>
-        <td>${p.author}</td>
-        <td style="color:#0066cc; font-weight:600;">${p.views.toLocaleString()}</td>
-        <td style="color:#8d9aaf;">${p.createdAt}</td>
+        <td style="color:#0066cc; font-weight:700;">${escapeHtml(p.id)}</td>
+        <td style="font-weight:600;">${escapeHtml(p.title)}</td>
+        <td>${escapeHtml(p.author)}</td>
+        <td style="color:#0066cc; font-weight:600;">${escapeHtml(p.views.toLocaleString())}</td>
+        <td style="color:#8d9aaf;">${escapeHtml(p.createdAt)}</td>
       </tr>
     `).join('');
   }
