@@ -1,9 +1,8 @@
 ## 실습 02 
 
 ### 검색·정렬·페이지네이션 게시판 개선
-
-##### 보고서 
-[Report] (docs/Report/202413123_report.pdf)
+#### 실습 보고서
+[Report](docs/Report/202413123_report.pdf)
 
 ### 1. 프로젝트와 실행 방법
 
